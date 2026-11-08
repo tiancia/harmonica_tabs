@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f3f6fa" />
+    <meta name="description" content="给新手的 A 调十孔口琴谱本。用孔号和吹吸提示，慢慢吹出一首歌。" />
+    <title>十孔谱本 · A 调口琴</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./songs.js" defer></script>
+    <script src="./shijiazhuang.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#score-title">跳到乐谱</a>
+    <header class="site-header">
+      <a class="brand" href="./index.html" aria-label="十孔谱本首页">
+        <svg class="brand-mark" viewBox="0 0 42 32" fill="none" aria-hidden="true"><rect x="1" y="5" width="40" height="22" rx="6" stroke="currentColor" stroke-width="2"/><path d="M8 13v6m6-6v6m7-6v6m7-6v6m6-6v6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        <span>十孔谱本<small>从一呼一吸开始</small></span>
+      </a>
+      <div class="header-right"><span class="instrument-tag">A 调 · 十孔口琴</span><button class="text-button guide-trigger" type="button"><span class="help-icon" aria-hidden="true">?</span>新手说明</button></div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar" aria-label="曲目与看谱提示">
+        <div class="library-heading"><h2>我的曲目</h2><span>2 首</span></div>
+        <nav class="song-list" aria-label="选择曲目">
+          <button class="song-choice is-selected" data-song="farewell" type="button" aria-current="true">
+            <span class="song-art meadow" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 39c3-11 9-20 20-29M20 40c0-9 5-19 18-27M9 29l11-2-1-9m2 15 10-2-1-9" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="11" r="4" fill="currentColor" opacity=".2"/></svg></span>
+            <span class="song-choice-copy"><strong>送别</strong><small>入门主旋律</small></span><span class="song-arrow" aria-hidden="true">›</span>
+          </button>
+          <button class="song-choice" data-song="shijiazhuang" type="button">
+            <span class="song-art city" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M6 39h36M10 39V20h13v19m0-10h15v10M15 20V9h4v11m8 15h2m3 0h2M14 26h5m-5 6h5" stroke="currentColor" stroke-width="1.5"/></svg></span>
+            <span class="song-choice-copy"><strong>杀死那个石家庄人</strong><small id="custom-song-status">进阶练习 · 需压音</small></span><span class="song-arrow" aria-hidden="true">›</span>
+          </button>
+        </nav>
+        <section class="quick-guide" aria-labelledby="quick-guide-title">
+          <h2 id="quick-guide-title">先记住这两个符号</h2>
+          <div class="legend-example"><span class="example-number blow">9</span><p><strong>第 9 孔，吹气</strong><small>没有负号，向口琴里呼气</small></p></div>
+          <div class="legend-example"><span class="example-number draw">-1</span><p><strong>第 1 孔，吸气</strong><small>有负号，从口琴里吸气</small></p></div>
+          <p class="sidebar-note">这里的数字是<strong>孔的位置</strong>，不是 do、re、mi。你不需要先学会识谱。</p>
+          <button class="guide-trigger text-button" type="button">第一次吹？看这里 <span aria-hidden="true">↗</span></button>
+        </section>
+        <div class="sidebar-footer"><span class="little-holes" aria-hidden="true">▰ ▰ ▰ ▰ ▰</span><p>不用着急，一句一句来。</p></div>
+      </aside>
+
+      <main id="main-content">
+        <section class="welcome-note"><span class="welcome-icon" aria-hidden="true">✳</span><p>把口琴的<strong>孔号朝上</strong>，1 孔在左、10 孔在右。嘴巴对准一个孔，轻轻吹或吸就好。</p><button class="guide-trigger" type="button" aria-label="查看拿琴和吹奏说明">查看说明</button></section>
+        <section class="score-heading" aria-labelledby="score-title">
+          <div><p id="song-credit" class="song-credit">J. P. Ordway 曲 · 入门主旋律</p><h1 id="score-title" tabindex="-1">送别</h1><p id="song-description" class="song-description">熟悉的旋律，慢慢吹。先试着吹好第一句。</p></div>
+          <div id="song-tags" class="song-tags"><span>A 调口琴</span><span>无需压音</span></div>
+        </section>
+
+        <div id="playable-content">
+          <section class="practice-panel" aria-label="当前孔位提示">
+            <div class="current-note" id="current-note" aria-live="polite" aria-atomic="true"><span class="current-caption">现在吹这里</span><div><strong id="current-tab" class="blow">6</strong><span id="current-action">第 6 孔 · 吹气<small>保持 1 拍</small></span></div></div>
+            <div class="harmonica-wrap"><div class="harmonica" id="harmonica" aria-label="口琴孔位示意图"></div><div class="orientation"><span>左边 · 低音</span><span>孔号朝上</span><span>右边 · 高音</span></div></div>
+            <div class="note-navigation"><span id="note-position">第 1 / 58 音</span><div><button id="previous-note" class="icon-button" type="button" aria-label="上一音" disabled>‹</button><button id="next-note" class="icon-button" type="button" aria-label="下一音">›</button></div></div>
+          </section>
+
+          <section class="score-paper" aria-label="孔位乐谱">
+            <div class="score-toolbar"><div class="score-instruction"><strong>从左往右，一句一句吹</strong><span>数字 = 孔号 · 正数吹气，负数吸气</span></div><div class="practice-controls"><label class="sr-only" for="tempo">自动指谱的速度</label><select id="tempo"><option value="60">慢慢练 · 60 拍/分钟</option><option value="80">正常练 · 80 拍/分钟</option><option value="100">熟练后 · 100 拍/分钟</option></select><button id="autoplay" class="primary-button" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> 自动指谱</button></div></div>
+            <p class="playback-status" id="playback-status" role="status">自动指谱只移动高亮，不播放音乐。也可以按上一音、下一音慢慢练。</p>
+            <div class="section-navigation" id="section-navigation" hidden><label for="section-jump">跳到段落</label><select id="section-jump"></select></div>
+            <div class="score-lines" id="score-lines"></div>
+            <div class="score-bottom"><p><span class="blow">● 吹气</span><span class="draw">● 吸气</span><span>休 = 暂停吹吸</span></p><span>每个音轻轻起音，不要用力冲。</span></div>
+          </section>
+        </div>
+
+        <section id="custom-content" class="import-panel" hidden aria-labelledby="import-title">
+          <div class="import-heading"><span class="import-icon" aria-hidden="true">＋</span><div><h2 id="import-title">编辑并另存我的曲谱</h2><p>修改孔位和拍数，另存一份自己的练习谱。内置曲谱不会被覆盖。</p></div></div>
+          <form id="import-form" novalidate>
+            <label class="input-label" for="tab-input">孔位谱</label>
+            <textarea id="tab-input" rows="5" maxlength="12000" spellcheck="false" aria-describedby="import-help import-error" placeholder="在这里粘贴孔位谱，每个数字之间用空格分开"></textarea>
+            <div class="import-help" id="import-help"><p><code>4 ~4 -2'':2 | -3''':0.25 休</code> <span>符号示意，不是本曲旋律。</span></p><p>正数吹、负数吸；默认 1 拍。<code>:2</code> 是 2 拍，<code>:0.5</code> 是半拍，<code>:0.25</code> 是 ¼ 拍。<code>休</code> 是停一拍；<code>|</code> 分小组，换行分句。</p><p>一个英文单引号表示压低 1 个半音：<code>-2''</code> 压低 2 个半音，<code>-3'''</code> 压低 3 个半音。<code>4 ~4</code> 表示后一音继续保持。只接受该孔实际可用的压音；不支持超吹和普通数字简谱，也不会自动转调。</p></div>
+            <p id="import-error" class="form-error" role="alert"></p>
+            <div class="import-actions"><button class="primary-button" type="submit">保存并显示乐谱</button><button class="secondary-button" id="cancel-import" type="button" hidden>返回乐谱</button><span>仅保存在当前浏览器，不会上传。</span></div>
+          </form>
+        </section>
+        <div class="custom-actions" id="custom-actions" hidden><button class="text-button" id="edit-tabs" type="button">编辑并另存我的谱</button><button class="text-button" id="show-builtin" type="button" hidden>返回内置曲谱</button><button class="text-button" id="show-saved" type="button" hidden>查看已保存的练习谱</button></div>
+
+        <section class="rhythm-guide" aria-labelledby="rhythm-title"><div><span class="rhythm-symbol" aria-hidden="true">♩</span><h2 id="rhythm-title">节拍，先这样理解就够了</h2><p>轻轻拍手，保持均匀。每拍一下，就是 1 拍。</p></div><div class="rhythm-examples"><div><strong>半拍</strong><span>两个音共用一拍</span></div><div><strong>1 拍</strong><span>吹到下一次拍手</span></div><div><strong>2 拍</strong><span>同一个音保持两拍</span></div></div><button class="text-button guide-trigger" type="button">查看完整说明 <span aria-hidden="true">↗</span></button></section>
+        <footer class="main-footer"><span>十孔谱本 / 第一版</span><span>只管慢慢练，音符会连成歌。</span></footer>
+      </main>
+    </div>
+
+    <dialog id="guide-dialog" aria-labelledby="guide-title">
+      <div class="dialog-header"><div><p>开始之前，花一分钟</p><h2 id="guide-title">第一次吹口琴</h2></div><button id="close-guide" class="icon-button" type="button" aria-label="关闭新手说明">×</button></div>
+      <div class="guide-content">
+        <section><h3>拿对方向，再找孔</h3><p>确认你的是标着 <strong>A</strong> 的标准十孔布鲁斯口琴（Richter 排列）。把孔号朝上、吹孔对着自己，左边是 1 孔，右边是 10 孔。这里不适用于复音口琴、半音阶口琴或特殊排列。</p></section>
+        <section><h3>数字告诉你吹哪里</h3><div class="guide-notation"><div><strong class="blow">9</strong><span>第 9 孔，吹气</span></div><div><strong class="draw">-1</strong><span>第 1 孔，吸气</span></div><div><strong>休</strong><span>暂时不吹不吸</span></div></div><p>负号只表示吸气，不表示低音。通常每个数字都要轻轻起音；如果标着“续”，就接着前一个音保持，不要断开或重新起音。颜色只是辅助，看负号就能分清。</p></section>
+        <section><h3>轻轻呼吸，只对准一个孔</h3><p>嘴唇放松，缩小开口，对准一个孔。像平常呼吸一样轻轻吹、轻轻吸，不要鼓着腮帮子使劲吹。听起来好几个音一起响，就稍微缩小嘴型、调整位置。气不够时先停下来，重新开始这一句。</p></section>
+        <section><h3>半拍、1 拍、2 拍怎么数？</h3><p>先按每秒一次的速度拍手。<strong>1 拍</strong>：从这次拍手保持到下次；<strong>2 拍</strong>：保持两个间隔，中间不重新起音；<strong>半拍</strong>：一个间隔放两个音；<strong>¼ 拍</strong>：一个间隔均匀放四个音；<strong>1½ 拍</strong>：一拍再多半拍。标着“休”时不发声，也照样数拍。</p><p>页面用分组竖线帮你找位置，竖线不代表停顿。换行也不用额外停一拍。先慢慢吹顺，再去接近歌曲的节奏。</p></section>
+        <section><h3>“压 2 半音”是什么意思？</h3><p>压音是在同一个孔中，调整舌头和口腔形状，让声音降低。它不是多吸几次，也不是用更大的力气吸。一个半音是相邻的两个音高之间的距离；“压 2 半音”就是把普通吸气音降低两个这样的距离。</p><p>本谱常见的 <strong>-2 + 压 2 半音</strong>是 2 孔吸气压低两个半音；<strong>-3 + 压 2 半音</strong>是 3 孔吸气压低两个半音。快速段还用到 <strong>-3 + 压 3 半音</strong>和 <strong>-4 + 压 1 半音</strong>。不同压音深度不能混用，可配合调音器或教学练习；还不会时，不要把标记省略后当普通吸气吹。</p></section>
+        <section><h3>A 调是什么意思？</h3><p>A 调是口琴的音高规格，本页两首曲目都适合 A 调标准十孔口琴。《送别》只需普通吹吸，另一首需要压音。先按孔号和提示练习，不用急着背音名；跟伴奏时，需要确认歌曲音高匹配。</p></section>
+        <section><h3>自动指谱怎么用？</h3><p>选一个慢速度，点击“自动指谱”，高亮会按每个音的时长向前走，<strong>不播放声音</strong>。再次点击可暂停。点任意一个音可以从那里开始；切换曲目或离开页面会暂停。60 拍/分钟就是每秒一拍。</p></section>
+      </div>
+      <form method="dialog" class="dialog-footer"><button class="primary-button" type="submit">知道了，开始练习</button></form>
+    </dialog>
+    <noscript><div class="noscript">请在浏览器中开启 JavaScript，以显示口琴谱和孔位提示。</div></noscript>
+  </body>
+</html>
