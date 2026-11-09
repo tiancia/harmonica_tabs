@@ -15,6 +15,8 @@
     tempo: $("tempo"),
     harmonica: $("harmonica"),
     dialog: $("guide-dialog"),
+    practicePanel: document.querySelector(".practice-panel"),
+    toolbar: document.querySelector(".score-toolbar"),
   };
   let selectedSong = songs[0];
   let notes = [];
@@ -132,7 +134,19 @@
     if (message) elements.status.textContent = message;
   }
 
-  function selectNote(index, { automatic = false } = {}) {
+  function revealNote(element) {
+    // 给吸顶孔位提示和工具栏留出空间，避免当前音被挡住。
+    const top = elements.practicePanel.getBoundingClientRect().height
+      + elements.toolbar.getBoundingClientRect().height + 16;
+    const bottom = window.innerHeight - 30;
+    const bounds = element.getBoundingClientRect();
+    if (bounds.top < top || bounds.bottom > bottom) {
+      const target = top + Math.max(0, (bottom - top - bounds.height) / 2);
+      window.scrollBy({ top: bounds.top - target, behavior: "instant" });
+    }
+  }
+
+  function selectNote(index, { automatic = false, follow = false } = {}) {
     if (!notes.length) return;
     if (!automatic) stopPlayback("已选中这个音。可以慢慢吹，或从这里开始自动指谱。");
     const previous = noteButtons[currentIndex];
@@ -150,12 +164,7 @@
     // 高亮当前音符对应的歌词字
     noteToChars[currentIndex]?.forEach((charEl) => {
       charEl.classList.add("is-current");
-      if (automatic) {
-        const bounds = charEl.getBoundingClientRect();
-        if (bounds.bottom > window.innerHeight - 30 || bounds.top < 20) {
-          charEl.scrollIntoView({ behavior: "instant", block: "center" });
-        }
-      }
+      if (automatic) revealNote(charEl);
     });
     $("current-tab").textContent = hole || "休";
     $("current-tab").className = hole > 0 ? "blow" : hole < 0 ? "draw" : "";
@@ -173,12 +182,7 @@
       element.classList.toggle("is-active", i + 1 === Math.abs(hole));
     });
     elements.harmonica.setAttribute("aria-label", `口琴孔位示意图，${noteAction(hole)}${meta.bend ? `，压低 ${meta.bend} 个半音` : ""}`);
-    if (automatic) {
-      const bounds = current.getBoundingClientRect();
-      if (bounds.bottom > window.innerHeight - 30 || bounds.top < 20) {
-        current.scrollIntoView({ behavior: "instant", block: "center" });
-      }
-    }
+    if (automatic || follow) revealNote(current);
   }
 
   function advancePlayback() {
@@ -251,8 +255,7 @@
             const firstNote = phraseStart + entry.notes[0];
             span.setAttribute("title", `${entry.char} → ${entry.notes.map((n) => `第${phraseStart + n + 1}音`).join("、")}`);
             span.addEventListener("click", () => {
-              selectNote(phraseStart + entry.notes[0]);
-              noteButtons[phraseStart + entry.notes[0]].scrollIntoView({ behavior: "smooth", block: "center" });
+              selectNote(phraseStart + entry.notes[0], { follow: true });
             });
             entry.notes.forEach((noteOffset) => {
               const globalIndex = phraseStart + noteOffset;
@@ -324,11 +327,15 @@
   document.querySelectorAll(".song-choice").forEach((button) => {
     button.addEventListener("click", () => renderSong(button.dataset.song));
   });
-  $("previous-note").addEventListener("click", () => selectNote(currentIndex - 1));
-  $("next-note").addEventListener("click", () => selectNote(currentIndex + 1));
+  const practicePanelObserver = new ResizeObserver(() => {
+    elements.playable.style.setProperty("--practice-panel-height", `${elements.practicePanel.getBoundingClientRect().height}px`);
+  });
+  practicePanelObserver.observe(elements.practicePanel);
+
+  $("previous-note").addEventListener("click", () => selectNote(currentIndex - 1, { follow: true }));
+  $("next-note").addEventListener("click", () => selectNote(currentIndex + 1, { follow: true }));
   $("section-jump").addEventListener("change", () => {
-    selectNote(Number($("section-jump").value));
-    noteButtons[currentIndex].scrollIntoView({ behavior: "instant", block: "center" });
+    selectNote(Number($("section-jump").value), { follow: true });
   });
   elements.play.addEventListener("click", () => {
     if (playing) stopPlayback("已暂停。再次开始会从当前这个音的开头继续。");

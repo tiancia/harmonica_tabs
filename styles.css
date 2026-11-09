@@ -84,7 +84,7 @@ h1 { font-family: "Noto Serif SC", "Songti SC", "SimSun", serif; font-size: 40px
 .song-description { color: var(--muted); margin-top: 10px; font-size: 12px; }
 .song-tags { display: flex; flex-wrap: wrap; justify-content: end; gap: 7px; flex-shrink: 0; max-width: 190px; }
 .song-tags span { font-size: 11px; padding: 4px 9px; border: 1px solid #d0dae4; border-radius: 4px; color: #607087; white-space: nowrap; }
-.practice-panel { display: grid; grid-template-columns: 186px minmax(200px, 1fr) 80px; gap: 25px; align-items: center; background: #e9f0f6; padding: 20px 24px; border: 1px solid #d3dfe9; border-radius: 9px 9px 0 0; border-bottom: 0; }
+.practice-panel { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 186px minmax(200px, 1fr) 80px; gap: 25px; align-items: center; background: #e9f0f6; padding: 20px 24px; border: 1px solid #d3dfe9; border-radius: 9px 9px 0 0; border-bottom: 0; }
 .current-caption { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
 .current-note > div { display: flex; align-items: center; gap: 12px; }
 #current-tab { font: 600 44px/1.2 "Consolas", monospace; min-width: 52px; }
@@ -105,7 +105,7 @@ h1 { font-family: "Noto Serif SC", "Songti SC", "SimSun", serif; font-size: 40px
 .note-navigation > div { display: flex; gap: 6px; margin-top: 8px; }
 .icon-button { width: 36px; min-height: 36px; padding: 0; border: 1px solid #c3d0dc; border-radius: 5px; background: #f7fafc; font: 24px/1 "Segoe UI", sans-serif; display: inline-grid; place-items: center; }
 .score-paper { background: var(--paper); border: 1px solid var(--line); border-radius: 0 0 9px 9px; padding: 24px 28px 0; box-shadow: 0 6px 22px #30435c03; }
-.score-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; position: sticky; top: 0; z-index: 2; background: var(--paper); padding: 8px 0; }
+.score-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; position: sticky; top: var(--practice-panel-height, 0px); z-index: 2; background: var(--paper); padding: 8px 0; }
 .score-instruction strong { display: block; font-size: 13px; font-weight: 600; }
 .score-instruction > span { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
 .practice-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
