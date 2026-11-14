@@ -53,6 +53,7 @@ svg { display: block; }
 .song-art svg { width: 40px; }
 .meadow { color: #487163; background: #e1ece5; }
 .city { color: #69667b; background: #e7e4ed; }
+.melody { justify-items: center; color: #85603d; background: #f2e8da; font-size: 25px; }
 .song-choice-copy { flex: 1; min-width: 0; }
 .song-choice strong { font-size: 13px; font-weight: 650; display: block; line-height: 1.5; }
 .song-choice small { display: block; font-size: 11px; color: var(--muted); margin-top: 5px; }
