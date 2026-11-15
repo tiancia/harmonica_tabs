@@ -24,21 +24,22 @@
 
     <div class="workspace">
       <aside class="sidebar" aria-label="曲目与看谱提示">
-        <div class="library-heading"><h2>我的曲目</h2><span>3 首</span></div>
-        <nav class="song-list" aria-label="选择曲目">
+        <div class="library-heading"><h2>我的曲目</h2><span>3 首 · 拖动排序</span></div>
+        <nav class="song-list" aria-label="选择曲目" aria-description="拖动曲目右侧手柄排序。键盘可按 Alt 加上下方向键移动曲目。">
           <button class="song-choice is-selected" data-song="farewell" type="button" aria-current="true">
             <span class="song-art meadow" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 39c3-11 9-20 20-29M20 40c0-9 5-19 18-27M9 29l11-2-1-9m2 15 10-2-1-9" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="11" r="4" fill="currentColor" opacity=".2"/></svg></span>
-            <span class="song-choice-copy"><strong>送别</strong><small>入门主旋律</small></span><span class="song-arrow" aria-hidden="true">›</span>
-          </button>
-          <button class="song-choice" data-song="shijiazhuang" type="button">
-            <span class="song-art city" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M6 39h36M10 39V20h13v19m0-10h15v10M15 20V9h4v11m8 15h2m3 0h2M14 26h5m-5 6h5" stroke="currentColor" stroke-width="1.5"/></svg></span>
-            <span class="song-choice-copy"><strong>杀死那个石家庄人</strong><small id="custom-song-status">进阶练习 · 需压音</small></span><span class="song-arrow" aria-hidden="true">›</span>
+            <span class="song-choice-copy"><strong>送别</strong><small>入门主旋律</small></span><span class="song-grip" aria-hidden="true" title="拖动排序">⠿</span>
           </button>
           <button class="song-choice" data-song="auld-lang-syne" type="button">
             <span class="song-art melody" aria-hidden="true">♫</span>
-            <span class="song-choice-copy"><strong>友谊地久天长</strong><small>苏格兰民歌 · 无需压音</small></span><span class="song-arrow" aria-hidden="true">›</span>
+            <span class="song-choice-copy"><strong>友谊地久天长</strong><small>苏格兰民歌 · 无需压音</small></span><span class="song-grip" aria-hidden="true" title="拖动排序">⠿</span>
+          </button>
+          <button class="song-choice" data-song="shijiazhuang" type="button">
+            <span class="song-art city" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M6 39h36M10 39V20h13v19m0-10h15v10M15 20V9h4v11m8 15h2m3 0h2M14 26h5m-5 6h5" stroke="currentColor" stroke-width="1.5"/></svg></span>
+            <span class="song-choice-copy"><strong>杀死那个石家庄人</strong><small id="custom-song-status">进阶练习 · 需压音</small></span><span class="song-grip" aria-hidden="true" title="拖动排序">⠿</span>
           </button>
         </nav>
+        <p id="song-order-status" class="sr-only" role="status"></p>
         <section class="quick-guide" aria-labelledby="quick-guide-title">
           <h2 id="quick-guide-title">先记住这两个符号</h2>
           <div class="legend-example"><span class="example-number blow">9</span><p><strong>第 9 孔，吹气</strong><small>没有负号，向口琴里呼气</small></p></div>

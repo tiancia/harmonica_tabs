@@ -309,11 +309,103 @@
     $("show-builtin").hidden = !useSavedSong;
     $("show-saved").hidden = useSavedSong || !savedSong;
     $("cancel-import").hidden = !playable;
-    elements.input.value = importedText || serializeTabs(songs[1].phrases);
+    if (isCustom) elements.input.value = importedText || serializeTabs(selectedSong.phrases);
     elements.error.textContent = isCustom ? storageWarning : "";
     elements.input.removeAttribute("aria-invalid");
     renderScore();
     if (isCustom && storageWarning) elements.status.textContent = storageWarning;
+  }
+
+  function initSongList() {
+    const list = document.querySelector(".song-list");
+    const orderKey = "ten-hole-songbook.song-order.v1";
+    const choices = new Map(Array.from(list.children, (button) => [button.dataset.song, button]));
+    try {
+      const saved = JSON.parse(localStorage.getItem(orderKey));
+      if (Array.isArray(saved)) {
+        for (const id of new Set([...saved, ...choices.keys()])) {
+          if (choices.has(id)) list.append(choices.get(id));
+        }
+      }
+    } catch {
+      // 无法读取偏好时使用页面中的默认顺序。
+    }
+
+    const status = $("song-order-status");
+    let drag = null;
+    let suppressClick = false;
+
+    function moveSong(button, target) {
+      const order = Array.from(list.children);
+      const index = order.indexOf(target);
+      if (index > order.indexOf(button)) target.after(button);
+      else target.before(button);
+      button.focus({ preventScroll: true });
+      try {
+        localStorage.setItem(orderKey, JSON.stringify(Array.from(list.children, (item) => item.dataset.song)));
+        status.className = "sr-only";
+        status.textContent = `《${button.querySelector("strong").textContent}》已移到第 ${index + 1} 首。`;
+      } catch {
+        status.className = "sidebar-note";
+        status.textContent = "顺序已调整。当前浏览器无法保存，刷新后会恢复默认顺序。";
+      }
+    }
+
+    function dropTarget(event) {
+      const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(".song-choice");
+      return target !== drag.button && target?.parentElement === list ? target : null;
+    }
+
+    function endDrag(event) {
+      if (event.pointerId !== drag?.id) return;
+      const { button, target } = drag;
+      const destination = event.type === "pointerup" && suppressClick && dropTarget(event);
+      drag = null;
+      button.classList.remove("is-dragging");
+      if (target) delete target.dataset.drop;
+      if (destination) moveSong(button, destination);
+    }
+
+    list.addEventListener("pointerdown", (event) => {
+      if (!event.isPrimary || event.button !== 0 || drag) return;
+      suppressClick = false;
+      const button = event.target.closest(".song-choice");
+      if (!button || (event.pointerType === "touch" && !event.target.closest(".song-grip"))) return;
+      drag = { button, id: event.pointerId, x: event.clientX, y: event.clientY, target: null };
+      button.setPointerCapture(event.pointerId);
+    });
+    list.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== drag?.id) return;
+      if (!suppressClick && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 5) return;
+      suppressClick = true;
+      drag.button.classList.add("is-dragging");
+      const target = dropTarget(event);
+      if (target === drag.target) return;
+      if (drag.target) delete drag.target.dataset.drop;
+      drag.target = target;
+      if (target) {
+        const follows = drag.button.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
+        target.dataset.drop = follows ? "after" : "before";
+      }
+    });
+    list.addEventListener("pointerup", endDrag);
+    list.addEventListener("pointercancel", endDrag);
+    list.addEventListener("lostpointercapture", endDrag);
+    // 避免浏览器把快速拖动手柄当作滑动翻页，吞掉松手后的下一次点歌。
+    list.querySelectorAll(".song-grip").forEach((grip) => {
+      grip.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
+    });
+    list.addEventListener("click", (event) => {
+      const button = event.target.closest(".song-choice");
+      if (button && !(suppressClick && event.detail)) renderSong(button.dataset.song);
+    });
+    list.addEventListener("keydown", (event) => {
+      const button = event.target.closest(".song-choice");
+      if (!button || !event.altKey || !["ArrowUp", "ArrowDown"].includes(event.key)) return;
+      event.preventDefault();
+      const target = event.key === "ArrowUp" ? button.previousElementSibling : button.nextElementSibling;
+      if (target) moveSong(button, target);
+    });
   }
 
   for (let hole = 1; hole <= 10; hole += 1) {
@@ -322,11 +414,8 @@
     elements.harmonica.append(cell);
   }
   loadImportedSong();
+  initSongList();
   renderSong("farewell");
-
-  document.querySelectorAll(".song-choice").forEach((button) => {
-    button.addEventListener("click", () => renderSong(button.dataset.song));
-  });
   const practicePanelObserver = new ResizeObserver(() => {
     elements.playable.style.setProperty("--practice-panel-height", `${elements.practicePanel.getBoundingClientRect().height}px`);
   });

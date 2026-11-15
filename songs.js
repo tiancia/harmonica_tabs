@@ -125,14 +125,6 @@ window.HARMONICA_SONGS = [
     ],
   },
   {
-    id: "shijiazhuang",
-    title: "杀死那个石家庄人",
-    credit: "万能青年旅店",
-    description: "",
-    tags: ["A 调口琴", "需要压音"],
-    phrases: [],
-  },
-  {
     id: "auld-lang-syne",
     title: "友谊地久天长",
     credit: "苏格兰民歌 · 彭斯词 · 邓映易译配",
@@ -218,5 +210,13 @@ window.HARMONICA_SONGS = [
         ],
       },
     ],
+  },
+  {
+    id: "shijiazhuang",
+    title: "杀死那个石家庄人",
+    credit: "万能青年旅店",
+    description: "",
+    tags: ["A 调口琴", "需要压音"],
+    phrases: [],
   },
 ];
