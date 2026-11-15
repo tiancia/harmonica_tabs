@@ -134,9 +134,9 @@ window.HARMONICA_SONGS = [
   },
   {
     id: "auld-lang-syne",
-    title: "友谊天长地久",
-    credit: "苏格兰民歌 · Auld Lang Syne · 许地山译词",
-    description: "每小节数两拍。在第二拍的后半拍轻吹第 4 孔，下一拍换到第 5 孔吸气。",
+    title: "友谊地久天长",
+    credit: "苏格兰民歌 · 彭斯词 · 邓映易译配",
+    description: "教材原谱为 F 大调，这份 A 调口琴谱移至 D 大调。开头的「怎」在第二拍后半拍吹第 4 孔，「能」落在下一小节第一拍，换第 5 孔吸气。",
     tags: ["A 调口琴", "无需压音", "2/4 拍"],
     // 实音 1=D5：低 5=4，低 6=-4，1=-5，2=6，3=-6，5=7，6=-8，高 1=-9。
     // 各句从半拍弱起开始，到下一次弱起之前结束。分行处的小节连续计拍。
@@ -144,7 +144,15 @@ window.HARMONICA_SONGS = [
       {
         section: "主歌",
         label: "主歌 · 第一句",
-        lyrics: Array.from("你怎能忘旧日朋友心情一点不留", (char, i) => ({ char, notes: [i] })),
+        lyrics: [
+          { char: "怎", notes: [0] }, { char: "能", notes: [1] },
+          { char: "忘", notes: [2] }, { char: "记", notes: [3] },
+          { char: "旧", notes: [4] }, { char: "日", notes: [5] },
+          { char: "朋", notes: [6] }, { char: "友", notes: [7] }, { char: "，", notes: [] },
+          { char: "心", notes: [8] }, { char: "中", notes: [9] },
+          { char: "能", notes: [10] }, { char: "不", notes: [11] },
+          { char: "怀", notes: [12] }, { char: "想", notes: [13] }, { char: "？", notes: [] },
+        ],
         bars: [
           [[4, 0.5]],
           [[-5, 0.75], [-5, 0.25], [-5, 0.5], [-6, 0.5]],
@@ -155,9 +163,17 @@ window.HARMONICA_SONGS = [
       },
       {
         label: "主歌 · 第二句",
-        lyrics: Array.from("你怎能忘旧日朋友和旧日的优游", (char, i) => ({ char, notes: [i] })),
+        lyrics: [
+          { char: "旧", notes: [0, 1] }, { char: "日", notes: [2] },
+          { char: "朋", notes: [3] }, { char: "友", notes: [4] },
+          { char: "岂", notes: [5] }, { char: "能", notes: [6] },
+          { char: "相", notes: [7] }, { char: "忘", notes: [8] }, { char: "，", notes: [] },
+          { char: "友", notes: [9] }, { char: "谊", notes: [10] },
+          { char: "地", notes: [11] }, { char: "久", notes: [12] },
+          { char: "天", notes: [13] }, { char: "长", notes: [14] }, { char: "。", notes: [] },
+        ],
         bars: [
-          [[-8, 0.5]],
+          [[-8, 0.25], [-8, 0.25, { tie: true }]],
           [[7, 0.75], [-6, 0.25], [-6, 0.5], [-5, 0.5]],
           [[6, 0.75], [-5, 0.25], [6, 0.5], [-6, 0.5]],
           [[-5, 0.75], [-4, 0.25], [-4, 0.5], [4, 0.5]],
@@ -167,7 +183,13 @@ window.HARMONICA_SONGS = [
       {
         section: "副歌",
         label: "副歌 · 第一句",
-        lyrics: Array.from("回忆往日我们情爱回忆往时情爱", (char, i) => ({ char, notes: [i] })),
+        lyrics: [
+          { char: "友", notes: [0] }, { char: "谊", notes: [1, 2] },
+          { char: "永", notes: [3, 4] }, { char: "存", notes: [5] }, { char: "，", notes: [] },
+          { char: "朋", notes: [6] }, { char: "友", notes: [7] }, { char: "，", notes: [] },
+          { char: "友", notes: [8] }, { char: "谊", notes: [9, 10] },
+          { char: "永", notes: [11, 12] }, { char: "存", notes: [13] }, { char: "！", notes: [] },
+        ],
         bars: [
           [[-8, 0.5]],
           [[7, 0.75], [-6, 0.25], [-6, 0.5], [-5, 0.5]],
@@ -177,14 +199,15 @@ window.HARMONICA_SONGS = [
         ],
       },
       {
-        label: "副歌 · 末句的第二个「喝」字唱四个音",
+        label: "副歌 · 第二句",
         lyrics: [
-          ...Array.from("我们为它要喝一杯", (char, i) => ({ char, notes: [i] })),
-          { char: "，", notes: [] },
-          { char: "要", notes: [8] },
-          { char: "喝", notes: [9, 10, 11, 12] },
-          { char: "杯", notes: [13] },
-          { char: "。", notes: [] },
+          { char: "举", notes: [0] }, { char: "杯", notes: [1] },
+          { char: "痛", notes: [2] }, { char: "饮", notes: [3] }, { char: "，", notes: [] },
+          { char: "同", notes: [4] }, { char: "声", notes: [5] },
+          { char: "歌", notes: [6] }, { char: "唱", notes: [7] },
+          { char: "友", notes: [8] }, { char: "谊", notes: [9] },
+          { char: "地", notes: [10] }, { char: "久", notes: [11] },
+          { char: "天", notes: [12] }, { char: "长", notes: [13] }, { char: "。", notes: [] },
         ],
         bars: [
           [[-9, 0.5]],
