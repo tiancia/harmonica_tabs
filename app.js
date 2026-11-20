@@ -21,7 +21,6 @@
   let selectedSong = songs[0];
   let notes = [];
   let noteButtons = [];
-  let lyricChars = [];
   let noteToChars = [];
   let currentIndex = 0;
   let timer = null;
@@ -164,7 +163,7 @@
     // 高亮当前音符对应的歌词字
     noteToChars[currentIndex]?.forEach((charEl) => {
       charEl.classList.add("is-current");
-      if (automatic) revealNote(charEl);
+      if (automatic && !selectedSong.lyricsUnderNotes) revealNote(charEl);
     });
     $("current-tab").textContent = hole || "休";
     $("current-tab").className = hole > 0 ? "blow" : hole < 0 ? "draw" : "";
@@ -210,7 +209,6 @@
   function renderScore() {
     notes = [];
     noteButtons = [];
-    lyricChars = [];
     noteToChars = [];
     currentIndex = 0;
     const fragment = document.createDocumentFragment();
@@ -223,6 +221,7 @@
       number.setAttribute("aria-hidden", "true");
       heading.append(number, makeElement("h2", "", phrase.label));
       const bars = makeElement("div", "bars");
+      if (selectedSong.lyricsUnderNotes) bars.classList.add("has-note-lyrics");
       const phraseStart = notes.length;
       phrase.bars.forEach((bar) => {
         const barElement = makeElement("div", "bar");
@@ -245,27 +244,34 @@
         bars.append(barElement);
       });
       section.append(heading, bars);
-      // 渲染逐字歌词行（仅当 phrase.lyrics 存在时）
       if (phrase.lyrics) {
         const lyricLine = makeElement("div", "lyric-line");
         phrase.lyrics.forEach((entry) => {
-          const isPunct = /[\s，。、；：？！,.]/.test(entry.char);
-          const span = makeElement("span", isPunct ? "lyric-punct" : "lyric-char", entry.char);
-          if (!isPunct && entry.notes.length > 0) {
-            const firstNote = phraseStart + entry.notes[0];
-            span.setAttribute("title", `${entry.char} → ${entry.notes.map((n) => `第${phraseStart + n + 1}音`).join("、")}`);
-            span.addEventListener("click", () => {
-              selectNote(phraseStart + entry.notes[0], { follow: true });
-            });
-            entry.notes.forEach((noteOffset) => {
-              const globalIndex = phraseStart + noteOffset;
-              if (noteToChars[globalIndex]) {
-                noteToChars[globalIndex].push(span);
-              }
-            });
+          if (!entry.notes.length) {
+            lyricLine.append(makeElement("span", "lyric-punct", entry.char));
+            return;
           }
-          lyricChars.push(span);
-          lyricLine.append(span);
+          const indices = entry.notes.map((offset) => phraseStart + offset);
+          const firstNote = indices[0];
+          const heldLyric = notes[firstNote][2].tie
+            ? noteToChars[firstNote - 1]?.find((el) => el.textContent === entry.char)
+            : null;
+          const span = heldLyric || makeElement("span", "lyric-char", entry.char);
+          const noteList = indices.map((index) => `第${index + 1}音`).join("、");
+          span.title = heldLyric ? `${span.title}、${noteList}` : `${entry.char} → ${noteList}`;
+          if (!heldLyric) {
+            span.addEventListener("click", () => selectNote(firstNote, { follow: true }));
+            lyricLine.append(span);
+          }
+          indices.forEach((index) => {
+            noteToChars[index].push(span);
+            if (selectedSong.lyricsUnderNotes) {
+              const continued = Boolean(heldLyric) || index !== firstNote;
+              const button = noteButtons[index];
+              button.append(makeElement("span", "note-lyric", continued ? "—" : entry.char));
+              button.setAttribute("aria-label", `${button.getAttribute("aria-label")}，${continued ? "延唱" : "歌词"}「${entry.char}」`);
+            }
+          });
         });
         section.append(lyricLine);
       }

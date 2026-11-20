@@ -215,8 +215,9 @@ window.HARMONICA_SONGS = [
     id: "if-love-had-providence",
     title: "假如爱有天意",
     credit: "李健 填词、演唱 · Yoo Young Seok 曲",
-    description: "从人声起句开始，第 5 孔先吹两拍，重新起音再吹一拍。整首用同一调练习，遇到「续」就保持气息。",
+    description: "「当」用第 5 孔吹两拍，「天」在同一孔重新起音吹一拍。拍数下方是歌词，「—」表示这个字继续唱，标「续」时保持气息。点歌词可从那个字开始练。",
     tags: ["A 调口琴", "需要压音", "3/4 拍"],
+    lyricsUnderNotes: true,
     phrases: makeIfLoveHadProvidencePhrases(),
   },
   {
@@ -275,17 +276,54 @@ function makeIfLoveHadProvidencePhrases() {
   ];
   const chorusFirstLine = [...chorusOpening, ...chorusAnswer];
 
+  // 空格分小节。每个字占一个音位，0 是休止，— 把本音归到上一字，标点不占拍。
+  function alignLyrics(underlay) {
+    const lyrics = [];
+    let syllable;
+    let noteIndex = 0;
+    for (const char of underlay.replaceAll(" ", "")) {
+      if ("，。？".includes(char)) {
+        lyrics.push({ char, notes: [] });
+        continue;
+      }
+      if (char === "—") {
+        syllable.notes.push(noteIndex);
+      } else if (char !== "0") {
+        syllable = { char, notes: [noteIndex] };
+        lyrics.push(syllable);
+      }
+      noteIndex++;
+    }
+    return lyrics;
+  }
+
+  const openingWords = "当天 边那颗 星出 现，你可 知我 又开始想 念。";
+  const secondChorusWords = "0多少 恍 惚 的时 候，仿佛 看见 你在人海 川流。";
+
   return [
     {
       section: "主歌一", label: "主歌一 · 起句", bars: verseOpening(),
-      lyrics: Array.from("当天边那颗星出现", (char, index) => ({ char, notes: [index] })),
+      lyrics: alignLyrics(openingWords),
     },
-    { label: "主歌一 · 收句", bars: [...verseEnding, [[0, 3]]] },
-    { section: "主歌二", label: "主歌二 · 起句", bars: verseOpening() },
-    { label: "主歌二 · 收句", bars: verseEnding },
-    { section: "副歌一", label: "副歌一 · 上句", bars: chorusFirstLine },
+    {
+      label: "主歌一 · 收句", bars: [...verseEnding, [[0, 3]]],
+      lyrics: alignLyrics("0有多 少爱 恋只能 遥遥相— 望，就像 月光— 洒向海 面。 0"),
+    },
+    {
+      section: "主歌二", label: "主歌二 · 起句", bars: verseOpening(),
+      lyrics: alignLyrics("年少 的我们 曾以 为，相爱 的人 就能到永 远。"),
+    },
+    {
+      label: "主歌二 · 收句", bars: verseEnding,
+      lyrics: alignLyrics("0当我 们相 信情到 深处在一 起，听不 见风— 中的叹 息。"),
+    },
+    {
+      section: "副歌一", label: "副歌一 · 上句", bars: chorusFirstLine,
+      lyrics: alignLyrics("0谁知 道 爱 是什 么？短暂 的相 遇，却念念 不忘。"),
+    },
     {
       label: "副歌一 · 下句",
+      lyrics: alignLyrics("0用尽 一 生 的时 间， 竟学 不会遗 忘。 0"),
       bars: [
         ...chorusRise,
         [[-6, 2, { bend: 1 }], [-7, 1]],
@@ -297,15 +335,24 @@ function makeIfLoveHadProvidencePhrases() {
     {
       section: "主歌三", label: "主歌三 · 起句",
       bars: verseOpening([[4, 1.5], [4, 0.5], [-4, 1]]),
+      lyrics: alignLyrics("如今 我们已 天各一 方，生活 得像 周围人一 样。"),
     },
-    { label: "主歌三 · 收句", bars: verseEnding },
-    { section: "副歌二", label: "副歌二 · 上句", bars: chorusFirstLine },
+    {
+      label: "主歌三 · 收句", bars: verseEnding,
+      lyrics: alignLyrics("0眼前 人给 我最信 任的依— 赖，但愿 你被— 温柔对 待。"),
+    },
+    {
+      section: "副歌二", label: "副歌二 · 上句", bars: chorusFirstLine,
+      lyrics: alignLyrics(secondChorusWords),
+    },
     {
       label: "副歌二 · 下句",
       bars: [...chorusRise, [[-7, 2], [-8, 1]], [[7, 3]]],
+      lyrics: alignLyrics("0隐约 中 你 已浮 现，"),
     },
     {
       label: "副歌二 · 收句降八度",
+      lyrics: alignLyrics("一转 眼又不 见 — — —。"),
       bars: [
         ...lowCadence,
         [[-3, 3, { bend: 2, tie: true }]],
@@ -316,9 +363,11 @@ function makeIfLoveHadProvidencePhrases() {
     {
       section: "副歌再现", label: "副歌再现 · 第三拍进入",
       bars: [[[0, 2], [-6, 0.5], [-6, 0.5]], ...chorusAnswer],
+      lyrics: alignLyrics("0短暂 的相 遇，却念念 不忘。"),
     },
     {
       label: "副歌再现 · 高音变奏",
+      lyrics: alignLyrics(secondChorusWords),
       bars: [
         ...chorusOpening,
         [[-6, 2], [-6, 1]],
@@ -328,6 +377,8 @@ function makeIfLoveHadProvidencePhrases() {
     },
     {
       label: "副歌再现 · 长音",
+      // 开头的「流」是上一行末音的最后一拍，两处共用同一个歌词字。
+      lyrics: alignLyrics("流隐约 中 你 已浮 现 — — —， 0"),
       bars: [
         [[-6, 1, { tie: true }], [5, 1], [6, 1]],
         [[-6, 3]],
@@ -343,12 +394,19 @@ function makeIfLoveHadProvidencePhrases() {
     {
       label: "副歌再现 · 收句",
       bars: [...lowCadence, [[-3, 2, { bend: 2, tie: true }], [0, 1]], [[0, 3]], [[0, 3]]],
+      lyrics: alignLyrics("一转 眼又不 见 —。0 0 0"),
     },
-    { section: "尾声", label: "尾声 · 回到主歌", bars: verseOpening() },
-    { label: "尾声 · 收句", bars: verseEnding },
+    {
+      section: "尾声", label: "尾声 · 回到主歌", bars: verseOpening(),
+      lyrics: alignLyrics(openingWords),
+    },
+    {
+      label: "尾声 · 收句", bars: verseEnding,
+      lyrics: alignLyrics("0有多 少爱 恋今生 无处安— 放，冥冥 中什— 么已改 变。"),
+    },
     {
       label: "尾声 · 最后一句",
-      lyrics: [{ char: "月", notes: [1] }, { char: "光", notes: [2] }],
+      lyrics: alignLyrics("0月光 如春 风 — —拂 — 面 —。"),
       bars: [
         [[0, 2], [-3, 0.5, { bend: 2 }], [-3, 0.5]],
         [[4, 2], [5, 1]],
