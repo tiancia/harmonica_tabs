@@ -9,6 +9,7 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
     <script src="./songs.js" defer></script>
+    <script src="./red-high-heels.js" defer></script>
     <script src="./shijiazhuang.js" defer></script>
     <script src="./app.js" defer></script>
   </head>
@@ -24,7 +25,7 @@
 
     <div class="workspace">
       <aside class="sidebar" aria-label="曲目与看谱提示">
-        <div class="library-heading"><h2>我的曲目</h2><span>4 首 · 拖动排序</span></div>
+        <div class="library-heading"><h2>我的曲目</h2><span>5 首 · 拖动排序</span></div>
         <nav class="song-list" aria-label="选择曲目" aria-description="拖动曲目右侧手柄排序。键盘可按 Alt 加上下方向键移动曲目。">
           <button class="song-choice is-selected" data-song="farewell" type="button" aria-current="true">
             <span class="song-art meadow" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 39c3-11 9-20 20-29M20 40c0-9 5-19 18-27M9 29l11-2-1-9m2 15 10-2-1-9" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="11" r="4" fill="currentColor" opacity=".2"/></svg></span>
@@ -33,6 +34,10 @@
           <button class="song-choice" data-song="auld-lang-syne" type="button">
             <span class="song-art melody" aria-hidden="true">♫</span>
             <span class="song-choice-copy"><strong>友谊地久天长</strong><small>苏格兰民歌 · 无需压音</small></span><span class="song-grip" aria-hidden="true" title="拖动排序">⠿</span>
+          </button>
+          <button class="song-choice" data-song="red-high-heels" data-insert-before="if-love-had-providence" type="button">
+            <span class="song-art melody" aria-hidden="true">👠</span>
+            <span class="song-choice-copy"><strong>红色高跟鞋</strong><small>蔡健雅 · 哼唱段需压音</small></span><span class="song-grip" aria-hidden="true" title="拖动排序">⠿</span>
           </button>
           <button class="song-choice" data-song="if-love-had-providence" type="button">
             <span class="song-art melody" aria-hidden="true">♪</span>

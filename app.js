@@ -331,9 +331,12 @@
       if (Array.isArray(saved)) {
         const order = [...new Set(saved)].filter((id) => choices.has(id));
         let previousId = null;
-        for (const id of choices.keys()) {
-          // 新曲紧跟默认前一首，已有曲目保留用户排好的相对顺序。
-          if (!order.includes(id)) order.splice(order.indexOf(previousId) + 1, 0, id);
+        for (const [id, button] of choices) {
+          if (!order.includes(id)) {
+            const beforeIndex = order.indexOf(button.dataset.insertBefore);
+            const position = beforeIndex >= 0 ? beforeIndex : order.indexOf(previousId) + 1;
+            order.splice(position, 0, id);
+          }
           previousId = id;
         }
         list.append(...order.map((id) => choices.get(id)));
