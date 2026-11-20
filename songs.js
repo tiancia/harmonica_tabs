@@ -212,6 +212,14 @@ window.HARMONICA_SONGS = [
     ],
   },
   {
+    id: "if-love-had-providence",
+    title: "假如爱有天意",
+    credit: "李健 填词、演唱 · Yoo Young Seok 曲",
+    description: "从人声起句开始，第 5 孔先吹两拍，重新起音再吹一拍。整首用同一调练习，遇到「续」就保持气息。",
+    tags: ["A 调口琴", "需要压音", "3/4 拍"],
+    phrases: makeIfLoveHadProvidencePhrases(),
+  },
+  {
     id: "shijiazhuang",
     title: "杀死那个石家庄人",
     credit: "万能青年旅店",
@@ -220,3 +228,137 @@ window.HARMONICA_SONGS = [
     phrases: [],
   },
 ];
+
+function makeIfLoveHadProvidencePhrases() {
+  // 1=A4，低 5=3，低 6=-3 压 2，低 7=-3。副歌的升 5 用 -6 压 1。
+  // 每行一个三拍小节。重复段共用相同的孔位，另写各次演唱有变化的小节。
+  function verseOpening(thirdBar = [[4, 2], [-4, 1]]) {
+    return [
+      [[5, 2], [5, 1]],
+      [[-4, 1.5], [4, 0.5], [-3, 1]],
+      thirdBar,
+      [[5, 2], [5, 0.5], [6, 0.5]],
+      [[-6, 2], [-6, 1]],
+      [[-7, 1.5], [-6, 0.5], [6, 0.5], [-4, 0.5]],
+      [[5, 3]],
+    ];
+  }
+
+  const lowCadence = [
+    [[4, 2], [5, 1]],
+    [[-4, 1.5], [-3, 0.5], [3, 1]],
+    [[-3, 3, { bend: 2 }]],
+  ];
+  const verseEnding = [
+    [[0, 2], [5, 0.5], [6, 0.5]],
+    [[-6, 2], [-6, 1]],
+    [[6, 2], [5, 0.5], [-4, 0.5]],
+    [[5, 1.5], [-5, 0.5], [5, 0.5], [-4, 0.5]],
+    [[4, 2], [-3, 0.5, { bend: 2 }], [-3, 0.5]],
+    [[4, 2], [-4, 0.5], [5, 0.5]],
+    ...lowCadence.slice(1),
+  ];
+  const chorusRise = [
+    [[0, 1], [5, 1], [6, 1]],
+    [[-6, 3]],
+    [[-7, 3]],
+  ];
+  const chorusOpening = [
+    ...chorusRise,
+    [[-7, 2], [-8, 1]],
+    [[7, 2], [-6, 0.5], [-6, 0.5]],
+  ];
+  const chorusAnswer = [
+    [[-6, 2], [-6, 1]],
+    [[6, 1.5], [-6, 0.5], [6, 0.5], [-4, 0.5]],
+    [[-5, 1], [5, 2]],
+  ];
+  const chorusFirstLine = [...chorusOpening, ...chorusAnswer];
+
+  return [
+    {
+      section: "主歌一", label: "主歌一 · 起句", bars: verseOpening(),
+      lyrics: Array.from("当天边那颗星出现", (char, index) => ({ char, notes: [index] })),
+    },
+    { label: "主歌一 · 收句", bars: [...verseEnding, [[0, 3]]] },
+    { section: "主歌二", label: "主歌二 · 起句", bars: verseOpening() },
+    { label: "主歌二 · 收句", bars: verseEnding },
+    { section: "副歌一", label: "副歌一 · 上句", bars: chorusFirstLine },
+    {
+      label: "副歌一 · 下句",
+      bars: [
+        ...chorusRise,
+        [[-6, 2, { bend: 1 }], [-7, 1]],
+        [[7, 3]],
+        ...lowCadence,
+        [[0, 3]],
+      ],
+    },
+    {
+      section: "主歌三", label: "主歌三 · 起句",
+      bars: verseOpening([[4, 1.5], [4, 0.5], [-4, 1]]),
+    },
+    { label: "主歌三 · 收句", bars: verseEnding },
+    { section: "副歌二", label: "副歌二 · 上句", bars: chorusFirstLine },
+    {
+      label: "副歌二 · 下句",
+      bars: [...chorusRise, [[-7, 2], [-8, 1]], [[7, 3]]],
+    },
+    {
+      label: "副歌二 · 收句降八度",
+      bars: [
+        ...lowCadence,
+        [[-3, 3, { bend: 2, tie: true }]],
+        [[-3, 3, { bend: 1 }]],
+        [[-3, 3, { bend: 1, tie: true }]],
+      ],
+    },
+    {
+      section: "副歌再现", label: "副歌再现 · 第三拍进入",
+      bars: [[[0, 2], [-6, 0.5], [-6, 0.5]], ...chorusAnswer],
+    },
+    {
+      label: "副歌再现 · 高音变奏",
+      bars: [
+        ...chorusOpening,
+        [[-6, 2], [-6, 1]],
+        [[-7, 1.5], [7, 0.5], [-7, 0.5], [6, 0.5]],
+        [[-7, 1], [-6, 2]],
+      ],
+    },
+    {
+      label: "副歌再现 · 长音",
+      bars: [
+        [[-6, 1, { tie: true }], [5, 1], [6, 1]],
+        [[-6, 3]],
+        [[-7, 3]],
+        [[-6, 2], [-7, 1]],
+        [[7, 3]],
+        [[7, 3, { tie: true }]],
+        [[7, 3, { tie: true }]],
+        [[7, 3, { tie: true }]],
+        [[0, 3]],
+      ],
+    },
+    {
+      label: "副歌再现 · 收句",
+      bars: [...lowCadence, [[-3, 2, { bend: 2, tie: true }], [0, 1]], [[0, 3]], [[0, 3]]],
+    },
+    { section: "尾声", label: "尾声 · 回到主歌", bars: verseOpening() },
+    { label: "尾声 · 收句", bars: verseEnding },
+    {
+      label: "尾声 · 最后一句",
+      lyrics: [{ char: "月", notes: [1] }, { char: "光", notes: [2] }],
+      bars: [
+        [[0, 2], [-3, 0.5, { bend: 2 }], [-3, 0.5]],
+        [[4, 2], [5, 1]],
+        [[-4, 3]],
+        [[-4, 3, { tie: true }]],
+        [[-4, 2, { tie: true }], [4, 1]],
+        [[4, 3, { tie: true }]],
+        [[-3, 3, { bend: 2 }]],
+        [[-3, 3, { bend: 2, tie: true }]],
+      ],
+    },
+  ];
+}

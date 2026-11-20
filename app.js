@@ -323,9 +323,14 @@
     try {
       const saved = JSON.parse(localStorage.getItem(orderKey));
       if (Array.isArray(saved)) {
-        for (const id of new Set([...saved, ...choices.keys()])) {
-          if (choices.has(id)) list.append(choices.get(id));
+        const order = [...new Set(saved)].filter((id) => choices.has(id));
+        let previousId = null;
+        for (const id of choices.keys()) {
+          // 新曲紧跟默认前一首，已有曲目保留用户排好的相对顺序。
+          if (!order.includes(id)) order.splice(order.indexOf(previousId) + 1, 0, id);
+          previousId = id;
         }
+        list.append(...order.map((id) => choices.get(id)));
       }
     } catch {
       // 无法读取偏好时使用页面中的默认顺序。
