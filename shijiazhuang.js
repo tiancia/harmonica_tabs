@@ -158,12 +158,96 @@
     }
     return result;
   });
+
+  // 每行是一句唱词的两个分句。数字是分句内的字序，竖线换小节，点留空。
+  // 同一数字再次出现时延唱；括号里的两个字共用谱上的一个长音。
+  const vocalLayout = [
+    [[10, ".123456|6"], [12, ".123456|67"]],
+    [[14, "..12345|5"], [16, ".123456|67"]],
+    [[17, "...12|234567|7"], [19, "...1|23456|6"]],
+    [[21, "..12|234567|78"], [23, "...12|345567|7"]],
+    [[26, "..12345|5"], [28, ".123456|67"]],
+    [[30, "..12345|5"], [32, "..12345|55"]],
+    [[33, "...12|233456|6"], [35, "...1|23456|6"]],
+    // 第 38 小节的首音延续上一小节的末字，多出的音型留空，从第 39 小节接回后半句。
+    [[37, "..12|2|.34567|78"], [40, "...12|345567|7"]],
+    // 低音区先多奏一遍旋律，第三段的连续四个分句从 51 开始。
+    [[51, ".123456|6"], [53, ".123456|677"]],
+    [[55, "..12345|5"], [57, ".123456|677"]],
+    [[58, "...12|23456|6"], [60, "....1|23456|6"]],
+    [[62, ".12|23456|677"], [64, "...12|345567|7"]],
+    [[82, ".12|2(34)567|7"], [84, "....1|23456|6"]],
+    [[86, ".12|23456|677"], [88, "...12|345567|7"]],
+    [[90, "..12|2(34)567|7"], [92, "...1|23456|6"]],
+    [[94, ".12|234567|788"], [96, "...12|345567|7"]],
+  ];
+  const syllableRanges = new Map();
+  let syllableCount = 0;
+  for (const [firstBar, pattern] of vocalLayout.flat()) {
+    pattern.split("|").forEach((mask, barOffset) => {
+      const bar = bars[firstBar - 1 + barOffset];
+      mask.match(/\(\d+\)|\d|\./g).forEach((mark, noteIndex) => {
+        if (mark === ".") return;
+        const digits = mark.match(/\d/g).map(Number);
+        const from = syllableCount + digits[0] - 1;
+        const to = syllableCount + digits[digits.length - 1];
+        syllableRanges.set(bar[noteIndex], { from, to, startsLine: mark === "1" });
+      });
+    });
+    syllableCount += Math.max(...pattern.match(/\d/g).map(Number));
+  }
+
+  function applyLyrics(text) {
+    if (!text || text.length !== syllableCount || !/^\p{Script=Han}+$/u.test(text)) return false;
+    for (const phrase of phrases) {
+      const lyrics = [];
+      let previous;
+      phrase.bars.flat().forEach((note, index) => {
+        const range = syllableRanges.get(note);
+        if (range) {
+          if (range.from !== previous?.from) {
+            if (range.startsLine && lyrics.length) lyrics.push({ char: "　", notes: [] });
+            lyrics.push({ char: text.slice(range.from, range.to), notes: [] });
+          }
+          lyrics[lyrics.length - 1].notes.push(index);
+        }
+        previous = range;
+      });
+      if (lyrics.length) phrase.lyrics = lyrics;
+    }
+    return true;
+  }
+
+  const lyricCacheKey = "ten-hole-songbook.shijiazhuang.lyrics.9fab9351";
+  async function readLyrics() {
+    try {
+      if (applyLyrics(localStorage.getItem(lyricCacheKey))) return;
+    } catch { /* 浏览器可能禁用了本地存储。 */ }
+    // 固定逐字谱的版本，防止上游换行或改字后与现有孔位错位。
+    const url = "https://fastly.jsdelivr.net/gh/amll-dev/amll-ttml-db@0fefa502a0d53d27770a30eed0fdf5ad5c7a2f12/ncm-lyrics/386844.ttml";
+    const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!response.ok) throw new Error("歌词未载入");
+    const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
+    const text = Array.from(xml.querySelectorAll("p > span[begin]"), (word) => word.textContent.trim()).join("");
+    if (!applyLyrics(text)) throw new Error("唱词与谱面不匹配");
+    try { localStorage.setItem(lyricCacheKey, text); } catch { /* 当前页面仍可使用已载入的唱词。 */ }
+  }
+  let lyricRequest;
+  function loadLyrics() {
+    if (!lyricRequest) lyricRequest = readLyrics().catch((error) => {
+      lyricRequest = null;
+      throw error;
+    });
+    return lyricRequest;
+  }
   const song = window.HARMONICA_SONGS.find((item) => item.id === "shijiazhuang");
   Object.assign(song, {
     credit: "万能青年旅店",
     description: "",
     tags: ["A 调口琴", "需要压音"],
     phrases,
+    lyricsUnderNotes: true,
+    loadLyrics,
     sourceBars,
     builtin: true,
   });

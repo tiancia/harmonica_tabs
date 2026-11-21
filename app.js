@@ -206,6 +206,28 @@
     timer = setTimeout(advancePlayback, Math.max(0, deadline - performance.now()));
   }
 
+  async function loadScoreLyrics(song, addLyrics) {
+    const firstSection = elements.lines.firstElementChild;
+    const description = $("song-description");
+    description.textContent = "正在载入歌词…";
+    description.hidden = false;
+    try {
+      await song.loadLyrics();
+    } catch {
+      if (!firstSection.isConnected) return;
+      const retry = makeElement("button", "text-button", "重试歌词");
+      retry.type = "button";
+      retry.addEventListener("click", () => loadScoreLyrics(song, addLyrics), { once: true });
+      description.replaceChildren(document.createTextNode("歌词暂未载入，仍可按孔位练习。 "), retry);
+      return;
+    }
+    if (!firstSection.isConnected) return;
+    addLyrics.forEach((add) => add());
+    noteToChars[currentIndex].forEach((span) => span.classList.add("is-current"));
+    description.textContent = song.description;
+    description.hidden = !song.description;
+  }
+
   function renderScore() {
     notes = [];
     noteButtons = [];
@@ -213,6 +235,8 @@
     currentIndex = 0;
     const fragment = document.createDocumentFragment();
     const sections = [];
+    const needsLyrics = selectedSong.loadLyrics && !selectedSong.phrases.some((phrase) => phrase.lyrics);
+    const pendingLyrics = [];
     selectedSong.phrases.forEach((phrase, phraseIndex) => {
       if (phrase.section) sections.push({ label: phrase.section, index: notes.length });
       const section = makeElement("section", "phrase");
@@ -221,7 +245,6 @@
       number.setAttribute("aria-hidden", "true");
       heading.append(number, makeElement("h2", "", phrase.label));
       const bars = makeElement("div", "bars");
-      if (selectedSong.lyricsUnderNotes) bars.classList.add("has-note-lyrics");
       const phraseStart = notes.length;
       phrase.bars.forEach((bar) => {
         const barElement = makeElement("div", "bar");
@@ -244,7 +267,9 @@
         bars.append(barElement);
       });
       section.append(heading, bars);
-      if (phrase.lyrics) {
+      function addLyrics() {
+        if (!phrase.lyrics) return;
+        if (selectedSong.lyricsUnderNotes) bars.classList.add("has-note-lyrics");
         const lyricLine = makeElement("div", "lyric-line");
         phrase.lyrics.forEach((entry) => {
           if (!entry.notes.length) {
@@ -273,8 +298,10 @@
             }
           });
         });
-        section.append(lyricLine);
+        if (lyricLine.childElementCount) bars.after(lyricLine);
       }
+      if (needsLyrics) pendingLyrics.push(addLyrics);
+      else addLyrics();
       if (phrase.warning) section.append(makeElement("p", "score-warning", phrase.warning));
       fragment.append(section);
     });
@@ -287,6 +314,7 @@
     }));
     selectNote(0);
     elements.status.textContent = "自动指谱只移动高亮，不播放音乐。也可以按上一音、下一音慢慢练。";
+    if (needsLyrics) loadScoreLyrics(selectedSong, pendingLyrics);
   }
 
   function renderSong(songId) {
