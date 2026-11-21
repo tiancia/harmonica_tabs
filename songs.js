@@ -212,6 +212,15 @@ window.HARMONICA_SONGS = [
     ],
   },
   {
+    id: "huang-sha-zi-ma",
+    title: "慌啥子嘛",
+    credit: "困困羊 词曲 · 赵本山 演唱版",
+    description: "从「慌」起吹。这个字先吹第 8 孔，再吸同一孔，两音各占 ¼ 拍。「嘛」落在下一小节第一拍，吸第 7 孔一整拍。",
+    tags: ["A 调口琴", "无需压音", "2/4 拍"],
+    lyricsUnderNotes: true,
+    phrases: makeHuangShaZiMaPhrases(),
+  },
+  {
     id: "if-love-had-providence",
     title: "假如爱有天意",
     credit: "李健 填词、演唱 · Yoo Young Seok 曲",
@@ -229,6 +238,81 @@ window.HARMONICA_SONGS = [
     phrases: [],
   },
 ];
+
+function makeHuangShaZiMaPhrases() {
+  // 歌海小虫记谱（1=B），移至 1=E5。低 3=-3，低 5=-4，低 6=5；
+  // 1=6，2=-6，3=-7，5=-8，6=8。按唱句分行，跨行的小节连续计拍。
+  const titleLyrics = [
+    { char: "慌", notes: [0, 1] }, { char: "啥", notes: [2] }, { char: "子", notes: [3] },
+    { char: "嘛", notes: [4] }, { char: "，", notes: [] },
+    { char: "慢", notes: [5, 6] }, { char: "慢", notes: [7, 8] }, { char: "来", notes: [9] },
+  ];
+  // 副歌两次「慢慢来」的第二个「慢」分别回到 3 和 2。
+  function chorusOpening(lastHoleOnMan) {
+    return [
+      [[8, 0.25], [-8, 0.25], [-7, 0.25], [-8, 0.25]],
+      [[-7, 1], [-7, 0.25], [-6, 0.25], [6, 0.25], [lastHoleOnMan, 0.25]],
+      [[-6, 1], [-6, 0.25], [-7, 0.25], [-6, 0.25], [6, 0.25]],
+      [[5, 0.5], [6, 0.25], [-6, 0.25], [-7, 0.5], [-8, 0.25], [8, 0.25]],
+      [[-7, 1]],
+    ];
+  }
+  const chorusResponse = [
+    [[-7, 0.25], [-6, 0.25], [6, 0.25], [8, 0.25]],
+    [[8, 1], [8, 0.25], [-8, 0.25], [-7, 0.25], [-8, 0.25]],
+  ];
+  const firstEnding = [
+    ...chorusResponse,
+    [[-8, 1], [-6, 0.25], [-7, 0.25], [-6, 0.25], [6, 0.25]],
+    [[5, 0.5], [6, 0.5], [6, 0.25], [-6, 0.25], [-7, 0.25], [-6, 0.25]],
+  ];
+  const secondEnding = [
+    ...chorusResponse,
+    [[-8, 1.5], [-6, 0.25], [-7, 0.25]],
+    [[-6, 0.25], [-7, 0.25], [-6, 0.25], [6, 0.25], [5, 0.5], [-6, 0.25], [6, 0.25]],
+  ];
+  const verseOpening = [
+    [[-6, 0.25], [-7, 0.25], [-8, 0.25], [-7, 0.25], [-6, 0.25], [6, 0.25], [5, 0.25], [-6, 0.25]],
+    [[-6, 1], [-7, 0.5], [-6, 0.25], [6, 0.25]],
+    [[5, 0.25], [6, 0.25], [-6, 0.25], [6, 0.25], [5, 0.25], [-4, 0.25], [-3, 0.25], [-4, 0.25]],
+    [[-4, 0.5], [-3, 1.5]],
+  ];
+  const dottedBar = [[5, 0.75], [-4, 0.25], [5, 0.5], [6, 0.25], [5, 0.25]];
+  const verseFirstEnding = [
+    dottedBar,
+    [[-4, 1], [-4, 0.5], [5, 0.25], [6, 0.25]],
+    [[-7, 0.5], [-6, 0.25], [6, 0.25], [5, 0.5], [6, 0.25], [-6, 0.25]],
+    [[-6, 1], [0, 1]],
+  ];
+  const verseSecondEnding = [
+    dottedBar,
+    [[-4, 0.75], [-4, 0.25], [5, 0.5], [-7, 0.5]],
+    [[-6, 0.25], [-7, 0.25], [-6, 0.25], [6, 0.25], [5, 0.25], [-4, 0.25], [5, 0.25], [6, 0.25]],
+    [[6, 1]],
+  ];
+
+  const phrases = [
+    { section: "开场副歌", label: "开场副歌 · 上句", bars: chorusOpening(-7), lyrics: titleLyrics },
+    { label: "开场副歌 · 下句", bars: [...firstEnding, [[-6, 1], [0, 1]], [[0, 2]]] },
+  ];
+  for (const pass of ["一", "二"]) {
+    const verse = `主歌${pass}`;
+    const chorus = `副歌${pass}`;
+    // 第一遍留一拍换气再回主歌，第二遍收在最后一个唱音。
+    const finalBar = pass === "一" ? [[6, 1], [0, 1]] : [[6, 1]];
+    phrases.push(
+      { section: verse, label: `${verse} · 第一句`, bars: verseOpening },
+      { label: `${verse} · 第二句`, bars: verseFirstEnding },
+      { label: `${verse} · 第三句`, bars: verseOpening },
+      { label: `${verse} · 第四句`, bars: verseSecondEnding },
+      { section: chorus, label: `${chorus} · 第一句`, bars: chorusOpening(-7), lyrics: titleLyrics },
+      { label: `${chorus} · 第二句`, bars: [...firstEnding, [[-6, 1]]] },
+      { label: `${chorus} · 第三句`, bars: chorusOpening(-6), lyrics: titleLyrics },
+      { label: `${chorus} · 第四句`, bars: [...secondEnding, finalBar] },
+    );
+  }
+  return phrases;
+}
 
 function makeIfLoveHadProvidencePhrases() {
   // 1=A4，低 5=3，低 6=-3 压 2，低 7=-3。副歌的升 5 用 -6 压 1。
