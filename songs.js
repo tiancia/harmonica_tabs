@@ -239,6 +239,29 @@ window.HARMONICA_SONGS = [
   },
 ];
 
+// 逐字谱固定到指定版本，唱词与曲目匹配后才写入缓存。
+function makeTimedLyricsLoader(cacheKey, url, applyLyrics) {
+  async function readLyrics() {
+    try {
+      if (applyLyrics(localStorage.getItem(cacheKey))) return;
+    } catch { /* 浏览器可能禁用了本地存储。 */ }
+    const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!response.ok) throw new Error("歌词未载入");
+    const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
+    const text = Array.from(xml.querySelectorAll("p > span[begin]"), (word) => word.textContent.trim()).join("");
+    if (!applyLyrics(text)) throw new Error("唱词与谱面不匹配");
+    try { localStorage.setItem(cacheKey, text); } catch { /* 当前页面仍可使用已载入的唱词。 */ }
+  }
+  let request;
+  return () => {
+    if (!request) request = readLyrics().catch((error) => {
+      request = null;
+      throw error;
+    });
+    return request;
+  };
+}
+
 function makeHuangShaZiMaPhrases() {
   // 歌海小虫记谱（1=B），移至 1=E5。低 3=-3，低 5=-4，低 6=5；
   // 1=6，2=-6，3=-7，5=-8，6=8。按唱句分行，跨行的小节连续计拍。

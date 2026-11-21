@@ -267,11 +267,11 @@
         bars.append(barElement);
       });
       section.append(heading, bars);
-      function addLyrics() {
-        if (!phrase.lyrics) return;
+      function addLyrics(entries = phrase.lyrics) {
+        if (!entries) return;
         if (selectedSong.lyricsUnderNotes) bars.classList.add("has-note-lyrics");
         const lyricLine = makeElement("div", "lyric-line");
-        phrase.lyrics.forEach((entry) => {
+        entries.forEach((entry) => {
           if (!entry.notes.length) {
             lyricLine.append(makeElement("span", "lyric-punct", entry.char));
             return;
@@ -299,8 +299,25 @@
           });
         });
         if (lyricLine.childElementCount) bars.after(lyricLine);
+        return lyricLine;
       }
-      if (needsLyrics) pendingLyrics.push(addLyrics);
+      if (needsLyrics && phrase.previewLyrics) {
+        const previewNotes = phrase.previewLyrics.flatMap(entry => entry.notes).map(offset => {
+          const index = phraseStart + offset;
+          return [index, noteButtons[index].getAttribute("aria-label")];
+        });
+        const previewLine = addLyrics(phrase.previewLyrics);
+        pendingLyrics.push(() => {
+          if (phrase.lyrics === phrase.previewLyrics) return;
+          previewLine.remove();
+          for (const [index, label] of previewNotes) {
+            noteToChars[index] = [];
+            noteButtons[index].querySelector(".note-lyric")?.remove();
+            noteButtons[index].setAttribute("aria-label", label);
+          }
+          addLyrics();
+        });
+      } else if (needsLyrics) pendingLyrics.push(addLyrics);
       else addLyrics();
       if (phrase.warning) section.append(makeElement("p", "score-warning", phrase.warning));
       fragment.append(section);

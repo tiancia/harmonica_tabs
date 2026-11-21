@@ -218,28 +218,6 @@
     return true;
   }
 
-  const lyricCacheKey = "ten-hole-songbook.shijiazhuang.lyrics.9fab9351";
-  async function readLyrics() {
-    try {
-      if (applyLyrics(localStorage.getItem(lyricCacheKey))) return;
-    } catch { /* 浏览器可能禁用了本地存储。 */ }
-    // 固定逐字谱的版本，防止上游换行或改字后与现有孔位错位。
-    const url = "https://fastly.jsdelivr.net/gh/amll-dev/amll-ttml-db@0fefa502a0d53d27770a30eed0fdf5ad5c7a2f12/ncm-lyrics/386844.ttml";
-    const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if (!response.ok) throw new Error("歌词未载入");
-    const xml = new DOMParser().parseFromString(await response.text(), "application/xml");
-    const text = Array.from(xml.querySelectorAll("p > span[begin]"), (word) => word.textContent.trim()).join("");
-    if (!applyLyrics(text)) throw new Error("唱词与谱面不匹配");
-    try { localStorage.setItem(lyricCacheKey, text); } catch { /* 当前页面仍可使用已载入的唱词。 */ }
-  }
-  let lyricRequest;
-  function loadLyrics() {
-    if (!lyricRequest) lyricRequest = readLyrics().catch((error) => {
-      lyricRequest = null;
-      throw error;
-    });
-    return lyricRequest;
-  }
   const song = window.HARMONICA_SONGS.find((item) => item.id === "shijiazhuang");
   Object.assign(song, {
     credit: "万能青年旅店",
@@ -247,7 +225,11 @@
     tags: ["A 调口琴", "需要压音"],
     phrases,
     lyricsUnderNotes: true,
-    loadLyrics,
+    loadLyrics: makeTimedLyricsLoader(
+      "ten-hole-songbook.shijiazhuang.lyrics.9fab9351",
+      "https://fastly.jsdelivr.net/gh/amll-dev/amll-ttml-db@0fefa502a0d53d27770a30eed0fdf5ad5c7a2f12/ncm-lyrics/386844.ttml",
+      applyLyrics,
+    ),
     sourceBars,
     builtin: true,
   });
